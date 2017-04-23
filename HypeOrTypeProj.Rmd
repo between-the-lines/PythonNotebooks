@@ -1,0 +1,94 @@
+---
+title: "Hype or Type Notebook"
+output: html_notebook
+---
+
+```{r eval = FALSE}
+#The pacman package is an R package management tool that combines the functionality of base library related functions into intuitively named functions.
+install.packages("pacman")
+ #Provides functions to allow one to compose general HTTP requests and provides convenient functions to fetch URI
+#Provides an interface to the OAuth 1.0 specification allowing users to authenticate via OAuth to the server of their choice.
+install.packages("RCurl", "ROAuth")
+#This is a package that allows conversion to and from data in Javascript object notation (JSON) format. 
+#Useful tools for working with HTTP organised by HTTP verbs (GET(), POST(), etc).
+#Access to Twitter Streaming API via R
+install.packages("RJSONIO,httr,streamR")
+
+#Load Packages Using Pacman
+pacman::p_load(twitteR,plyr, ggplot2, RColorBrewer, httpuv, RCurl, base64enc,devtools,streamR,RJSONIO,stringr, ggmap, ROAuth)
+```
+
+```{r echo=FALSE}
+#Twitter Access
+requestURL <- "https://api.twitter.com/oauth/request_token"
+accessURL <- "https://api.twitter.com/oauth/access_token"
+authURL <- "https://api.twitter.com/oauth/authorize"
+consumerKey <- "VVyAQ0GEN3h7N492wmgN49yL5"
+consumerSecret <- "8EaVm0hGvPhOFwuHQRlk5Dc4mPgcJTCinuDOD2MIkYRB73dJdb"
+```
+
+```{r eval= FALSE}
+#Use OAuthFactory for access 
+credentials <- OAuthFactory$new(consumerKey = consumerKey,
+                             consumerSecret = consumerSecret,
+                             requestURL = requestURL,
+                             accessURL = accessURL,
+                             authURL = authURL)
+
+```
+```{r eval= FALSE}
+#Performs an OAuth handshake using the information provided.
+credentials$handshake(cainfo = system.file("CurlSSL", "cacert.pem", package = "RCurl"))
+
+```
+```{r eval= FALSE}
+#Find GeoCode by typing city, state
+geocode("las vegas, nv")
+```
+
+```{r}
+
+#Requires Logitute,Latitude (1.South, 2.North)
+nyLoc <- "-74,40.47,-73.7,40.9"
+miaLoc <- "-80.3,25.7,-80.1,25.8"
+sfLoc <- "-122,36.8,-121.75,37.8	"
+kyLoc <- "-85.9,37.9,-85.4,38.3"
+laLoc <- "-118.6, 33.7,-118.1,34.3"
+lvLoc <-  "-115.13, 35.95, -114.95, 36.16"
+utahLoc <-  "-112.1,40.7,-111.7,40.8"
+
+#iterates stream through cities provided
+iterData <- function(x) {
+  streamData(x, nyLoc, "projx.json")
+  streamData(x, miaLoc, "projx.json")
+  streamData(x, sfLoc, "projx.json")
+  streamData(x, kyLoc, "projx.json")
+  streamData(x, laLoc, "projx.json")
+  streamData(x, lvLoc, "projx.json")
+  streamData(x, utahLoc, "projx.json")
+  
+}
+
+#Streaming Data Function
+streamData <- function(x, y, w){
+  filterStream(file.name = w, # Save tweets in a json file
+               track = c(x), # Collect tweets mentioning either Fox, fownews, oreilly, oreillyfactor
+               language = "en",
+               location = c(y), # latitude/longitude pairs providing southwest and northeast corners of the bounding box.
+               timeout = 10, # Keep connection alive for 60 seconds
+               oauth = my_oauth) # Use my_oauth file as the OAuth credentials
+  
+}
+
+#Input Function
+iterData("s8 samsung, galaxy8 samsung, galaxys8 samsung, galaxys8,samsunggalaxy 8, samsunggalaxy8")
+
+
+iterData2 <- function(x) {
+  streamData(x, sfLoc, "sfClasico.json")
+}
+
+iterData2("goldengate, sfbay, bayarea, goldengatebridge, sf bay, san fran, san francisco")
+
+```
+
